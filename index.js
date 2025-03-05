@@ -24,9 +24,12 @@ app.get("/", (req, res) => {
 //
 // Registers a HTTP GET route for video streaming.
 app.get("/video", async (req, res) => {
+
     const path = require('path');
-    const videoPath = path.resolve(__dirname, '../my-new-project/videos/SampleVideo_1280x720_1mb.mp4');
-    console.log(videoPath);
+
+    const videoPath = path.join(__dirname, "videos", "SampleVideo_1280x720_1mb.mp4");
+    console.log("Looking for file at:", videoPath);
+
     const stats = await fs.promises.stat(videoPath);
 
     res.writeHead(200, {

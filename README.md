@@ -27,6 +27,8 @@ to the container.
 
     ce263ec9596c2197b8d862d8730f3e4a64d76ba73d656eb382547bd48df285c1
 
+    container id : 3dcd7aec2686
+
 
 ## Run the Container with Port Mapping
 docker run -p 3000:3000 -e PORT=3000 my-node-app

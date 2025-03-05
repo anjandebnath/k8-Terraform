@@ -13,6 +13,7 @@ RUN npm install --only=production
 
 # Copy the rest of the project files
 COPY . .
+COPY videos/ /app/videos/
 
 # Expose the port the app runs on
 EXPOSE 3000
