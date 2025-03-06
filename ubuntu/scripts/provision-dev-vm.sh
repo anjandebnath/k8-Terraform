@@ -59,9 +59,9 @@ terraform --version
 #
 # User setup for docker.
 #
-sudo groupadd docker
-sudo gpasswd -a $USER docker
-sudo service docker restart
+sudo groupadd docker  # Creates a new group called "docker" on the system
+sudo gpasswd -a $USER docker #Adds the current user (represented by the variable $USER) to the "docker" group
+sudo service docker restart # Restarts the Docker service/daemon to apply the group changes
 
 
 
