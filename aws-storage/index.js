@@ -110,6 +110,6 @@ app.get("/video", async (req, res) => {
 //
 // Starts the HTTP server.
 //
-app.listen(PORT, () => {
-    console.log(`Microservice online on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Video-Storage service listening on port ${PORT}, point your browser at http://localhost:${PORT}/video`);
 });
