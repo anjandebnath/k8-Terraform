@@ -4,23 +4,23 @@ Under this project I am learning the basics of DevOps and Cloud Architecture pat
 Document Link: https://docs.google.com/document/d/1QLBJ6NbI1ysuVY7toN3WqBO_MbLvVDgZD4ctbC7fEF8/edit?tab=t.0#heading=h.b0zthp3z1ihh
 
 Scope of this Branch:
-We’ll add file storage so the WebApp has a location to store its videos. We want to have distinct areas of responsibility in
-our application for video streaming and video storage.
+feature_2/boot_separate_microservice:
+We created an AWS Storage account, and we uploaded our test video. Then we created our
+second microservice, the AWS Storage microservice, which is a REST API
+that abstracts our storage provider. After that, we updated our videostreaming microservice so that instead of loading the video from the filesystem, it now retrieves the video via the video-storage microservice.
 
-We are adding file storage so that we have a location to store the videos used by
-our application. A common approach is to use a storage solution provided
-by one of the big cloud vendors. 
+feature_3/mongodb_configure
 
-Live Reload
-Live reload is really important to fast development because we can make
-changes to our code and have our microservice automatically restart.
-We can run it in development mode with nodemon for live
-reload like this
+Here we update our video-streaming microservice to delegate storage to another microservice. We are separating our concerns so that the videostreaming microservice is solely responsible for streaming video to our
+user and so that it doesn’t need to know the details of how storage is handled.
 
-        npm run start:dev
+   npm run start:dev 
+   http://localhost:3001/video
 
-In the next feature branch, we’ll add a database. At this point, we add a database so that we
-have a place to record the path to each video, but this is really just an excuse to get a database in place.
+
+
+The first thing we need is metadata storage for each video. We’ll start using our database by storing the path to each video. This will fix the problem we encountered earlier of having a hard-coded path to the video file
+in our video-streaming microservice.
 
 ## vagrant commands 
 
