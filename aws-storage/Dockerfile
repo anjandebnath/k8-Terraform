@@ -1,3 +1,5 @@
+#Script for building a single image.
+
 # Use an official Node.js runtime as a parent image
 FROM node:18
 
@@ -13,10 +15,9 @@ RUN npm install --only=production
 
 # Copy the rest of the project files
 COPY . .
-COPY videos/ /app/videos/
 
 # Expose the port the app runs on
-EXPOSE 3000
+#EXPOSE 3000
 
 # Command to run the app
 CMD ["npm", "start"]

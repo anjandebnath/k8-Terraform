@@ -36,16 +36,6 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
 #
-# Install Azure cli.
-# https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-apt?view=azure-cli-latest
-#
-AZ_REPO=$(lsb_release -cs)
-echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list
-curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-sudo apt-get -yq update
-sudo apt-get -yq install apt-transport-https azure-cli
-
-#
 # Install Terraform
 #
 # https://www.terraform.io/downloads.html
@@ -59,9 +49,9 @@ terraform --version
 #
 # User setup for docker.
 #
-sudo groupadd docker
-sudo gpasswd -a $USER docker
-sudo service docker restart
+sudo groupadd docker  # Creates a new group called "docker" on the system
+sudo gpasswd -a $USER docker #Adds the current user (represented by the variable $USER) to the "docker" group
+sudo service docker restart # Restarts the Docker service/daemon to apply the group changes
 
 
 

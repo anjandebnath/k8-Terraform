@@ -11,13 +11,11 @@ Under this project I am learning the basics of DevOps and Cloud Architecture pat
     `cd /home/vagrant/node_project`
     `ls -l`
 
+## If your project is stored in a different path inside the VM, adjust the command
 
-## docker build -t my-node-app /home/vagrant/node_project
     ` config.vm.synced_folder "/Users/anjandebnath/Documents/NodeProject/my-new-project", "/home/vagrant/node_project" `
 
-
-
-## If your project is stored in a different path inside the VM, adjust the command
+## docker build -t my-node-app /home/vagrant/node_project
    `docker build -t my-node-app /home/vagrant/node_project`
 
 ## Run the Docker Container, and the ID that generated You’ll need this ID to invoke future Docker commands that relate
