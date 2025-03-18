@@ -1,6 +1,14 @@
 version: '3'
 services:
 
+  db:
+    image: mongo:4.2.8
+    container_name: db
+    ports:
+     - "4000:27017"   #Maps the MongoDB standard port 27017 to 4000 on our host OS. We can interact with and check the database on our host using port 4000
+    restart: always 
+
+
   aws-storage:
     image: aws-storage
     build: 
@@ -8,15 +16,13 @@ services:
       dockerfile: Dockerfile
     container_name: video-storage
     ports:
-     - "4000:80"   #The container's port 80 is mapped to port 4000 on the host machine.
-
+     - "4001:80"   #The container's port 80 is mapped to port 4000 on the host machine.
     environment:
-      - PORT=80
-      - AWS_ACCESS_KEY_ID=""
-      - AWS_SECRET_ACCESS_KEY=""
-      - AWS_REGION=""
-      - S3_BUCKET_NAME=""
-      - S3_FILE_NAME=""
+      - PORT=80                            # for local dev testing use PORT=3000
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_REGION=
+      - S3_BUCKET_NAME=
     restart: "no"
 
 
@@ -27,9 +33,13 @@ services:
       dockerfile: Dockerfile
     container_name: video-streaming
     ports:
-     - "4001:80"  #The container's port 80 is mapped to port 4001 on the host machine.
+     - "4002:80"  #The container's port 80 is mapped to port 4002 on the host machine.
     environment:
-      - PORT=80
+      - PORT=80                            # for local dev testing use PORT=4002
+      - DBHOST=mongodb://db:27017          # Configures the microservice to connect to the database DBHOST=mongodb://localhost:4000
+      - DBNAME=video-streaming
       - VIDEO_STORAGE_HOST=video-storage   # for local dev testing use VIDEO_STORAGE_HOST=localhost
       - VIDEO_STORAGE_PORT=80              # for local dev testing use VIDEO_STORAGE_PORT=3000
+    depends_on:
+      - db  
     restart: "no"

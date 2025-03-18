@@ -40,11 +40,63 @@ docker-compose --version
 #
 # https://www.terraform.io/downloads.html
 #
-sudo apt-get -yq install unzip
-wget https://releases.hashicorp.com/terraform/0.12.29/terraform_0.12.29_linux_amd64.zip
-unzip terraform_0.12.29_linux_amd64.zip
+
+#!/bin/bash
+
+# Exit on error
+set -e
+
+echo "Updating package lists..."
+sudo apt-get update -y
+
+echo "Installing dependencies..."
+sudo apt-get install -y wget unzip
+
+# Detect system architecture
+ARCH=$(dpkg --print-architecture)
+if [[ "$ARCH" == "arm64" ]]; then
+    TERRAFORM_ARCH="arm64"
+elif [[ "$ARCH" == "amd64" ]]; then
+    TERRAFORM_ARCH="amd64"
+else
+    echo "Unsupported architecture: $ARCH"
+    exit 1
+fi
+
+echo "Downloading Terraform..."
+TERRAFORM_VERSION="1.6.0"
+wget https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${TERRAFORM_ARCH}.zip -O terraform.zip
+
+echo "Unzipping Terraform..."
+unzip terraform.zip
+
+echo "Moving Terraform to /usr/local/bin..."
 sudo mv terraform /usr/local/bin/
-terraform --version 
+
+echo "Setting permissions..."
+sudo chmod +x /usr/local/bin/terraform
+
+echo "Verifying Terraform installation..."
+terraform --version
+
+echo "Terraform installation completed!"
+
+
+#!/bin/bash
+#
+# Install MongoDB tools (for loading data into database).
+#
+wget -qO - https://www.mongodb.org/static/pgp/server-4.2.asc | sudo apt-key add -
+echo "deb [ arch=arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.2.list
+sudo apt-get -yq update
+sudo apt-get install -y mongodb-org-tools=4.2.0
+
+
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/mongodb-server-keyring.gpg] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+sudo apt-get update -y
+sudo apt-get install -y mongodb-mongosh
+
 
 #
 # User setup for docker.
@@ -52,6 +104,15 @@ terraform --version
 sudo groupadd docker  # Creates a new group called "docker" on the system
 sudo gpasswd -a $USER docker #Adds the current user (represented by the variable $USER) to the "docker" group
 sudo service docker restart # Restarts the Docker service/daemon to apply the group changes
+
+
+
+
+
+
+
+
+
 
 
 

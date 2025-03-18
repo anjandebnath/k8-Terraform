@@ -22,6 +22,11 @@ user and so that it doesn’t need to know the details of how storage is handled
 The first thing we need is metadata storage for each video. We’ll start using our database by storing the path to each video. This will fix the problem we encountered earlier of having a hard-coded path to the video file
 in our video-streaming microservice.
 
+MongoDB is one of the most popular of the so-called NoSQL variety of databases. Using Docker allows us to have an almost instant database. MongoDB is also known to have high performance and is extremely scalable.
+
+We will add one new container to our application to host a single database server. We only need a single server,
+but we can host many databases on that server. 
+
 ## vagrant commands 
 
    `vagrant ssh`
