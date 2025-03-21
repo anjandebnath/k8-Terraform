@@ -1,0 +1,19 @@
+#Script for building a single image.
+
+# Use an official Node.js runtime as a parent image
+FROM node:12.18.1-alpine
+
+# Set the working directory inside the container
+WORKDIR /usr/src/app
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install --only=production
+
+# Copy the rest of the project files
+COPY ./src ./src
+
+# Command to run the app
+CMD ["npm", "start"]

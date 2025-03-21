@@ -1,35 +1,49 @@
 version: '3'
 services:
 
-  aws-storage:
-    image: aws-storage
-    build: 
-      context: ./aws-storage
-      dockerfile: Dockerfile
-    container_name: video-storage
+  db-mongo:
+    image: mongo:4.2.8
+    container_name: db-mongo
     ports:
-     - "4000:80"   #The container's port 80 is mapped to port 4000 on the host machine.
+      - "4000:27017"
+    restart: always
 
-    environment:
-      - PORT=80
-      - AWS_ACCESS_KEY_ID=""
-      - AWS_SECRET_ACCESS_KEY=""
-      - AWS_REGION=""
-      - S3_BUCKET_NAME=""
-      - S3_FILE_NAME=""
-    restart: "no"
-
-
+  
   video-streaming:
     image: video-streaming
     build: 
       context: ./video-streaming
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile-dev
     container_name: video-streaming
+    volumes: # Add volumes so that the code and npm cache are shared to container
+      - /tmp/video-streaming/npm-cache:/root/.npm:z
+      - ./video-streaming/src:/usr/src/app/src:z
+      - ./video-streaming/videos:/usr/src/app/videos:z
     ports:
-     - "4001:80"  #The container's port 80 is mapped to port 4001 on the host machine.
+     - "4001:80"  #The container's port 80 is mapped to port 4002 on the host machine.
+    environment:
+      - PORT=80 
+      - NODE_ENV=development                           
+                   
+    restart: "no"
+
+
+  video-history:
+    image: video-history
+    build:
+      context: ./video-history
+      dockerfile: Dockerfile-dev  
+    container_name: video-history
+    volumes:
+      - /tmp/video-history/npm-cache:/root/.npm:z
+      - ./video-history/src:/usr/src/app/src:z
+    ports:
+      - "4002:80"
     environment:
       - PORT=80
-      - VIDEO_STORAGE_HOST=video-storage
-      - VIDEO_STORAGE_PORT=80
-    restart: "no"
+      - DBHOST=mongodb://db-mongo:27017
+      - DBNAME=history
+      - NODE_ENV=development
+    depends_on:
+      - db-mongo
+    restart: "no"  
