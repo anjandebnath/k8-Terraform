@@ -4,28 +4,30 @@ Under this project I am learning the basics of DevOps and Cloud Architecture pat
 Document Link: https://docs.google.com/document/d/1QLBJ6NbI1ysuVY7toN3WqBO_MbLvVDgZD4ctbC7fEF8/edit?tab=t.0#heading=h.b0zthp3z1ihh
 
 Scope of this Branch:
-feature_2/boot_separate_microservice:
-We created an AWS Storage account, and we uploaded our test video. Then we created our
-second microservice, the AWS Storage microservice, which is a REST API
-that abstracts our storage provider. After that, we updated our videostreaming microservice so that instead of loading the video from the filesystem, it now retrieves the video via the video-storage microservice.
+So far the video-streaming microservice has a mongodb database, and the video-storage microservice uses external cloud storage AWS S3 to store the video files. 
 
-feature_3/mongodb_configure
+Actually, we wouldn’t have gotten this far without having already used HTTP requests for communication between the video-streaming and video-storage microservice.
 
-Here we update our video-streaming microservice to delegate storage to another microservice. We are separating our concerns so that the videostreaming microservice is solely responsible for streaming video to our
-user and so that it doesn’t need to know the details of how storage is handled.
+We are using the history microservices in this chapter as an example of how microservices can send and receive messages to each other. Actually, this new microservice really does have a proper place in FlixTube, and as the name suggests, it records our user’s viewing history.
 
-   npm run start:dev 
-   http://localhost:3001/video
+The message we’ll transmit between microservices is the viewed message.To keep the examples in this repo simple, we’ll drop out the video-storage microservice.
+
+As a way to explore communication methods, we’ll have the video-streaming microservice send a viewed message to the history microservice to record our user’s viewing history.
+
+Having an efficient live reload mechanism is even more important at the application level than it is at the microservice level. 
+Unfortunately, in transitioning from direct use of Node.js to running our microservices in Docker containers, we lost
+our ability to automatically reload our code.
+
+Because we are baking our code into our Docker images, we aren’t able to change it afterward!
+And for repeated rebuilds and restarts, the time really adds up, especially as our application grows in size.
+
+We’ll upgrade our Docker Compose file to support sharing code between our development workstation and our containers. 
+
+we’ll create separate Dockerfiles for our development and production modes. In each case, our needs differ. For development, we prioritize fast iteration. For production, we prioritize performance and security.
+
+To share the code, we use one Docker volume. 
 
 
-
-The first thing we need is metadata storage for each video. We’ll start using our database by storing the path to each video. This will fix the problem we encountered earlier of having a hard-coded path to the video file
-in our video-streaming microservice.
-
-MongoDB is one of the most popular of the so-called NoSQL variety of databases. Using Docker allows us to have an almost instant database. MongoDB is also known to have high performance and is extremely scalable.
-
-We will add one new container to our application to host a single database server. We only need a single server,
-but we can host many databases on that server. 
 
 ## vagrant commands 
 
