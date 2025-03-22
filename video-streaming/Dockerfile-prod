@@ -1,7 +1,7 @@
 #Script for building a single image.
 
 # Use an official Node.js runtime as a parent image
-FROM node:12.18.1-alpine
+FROM node:18.17.1
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -21,4 +21,6 @@ COPY videos/ /app/videos/
 EXPOSE 3000
 
 # Command to run the app
-CMD ["npm", "start"]
+#CMD ["npm", "start"]
+CMD npx wait-port rabbitmq:5672 && \
+    npm start

@@ -4,30 +4,30 @@ Under this project I am learning the basics of DevOps and Cloud Architecture pat
 Document Link: https://docs.google.com/document/d/1QLBJ6NbI1ysuVY7toN3WqBO_MbLvVDgZD4ctbC7fEF8/edit?tab=t.0#heading=h.b0zthp3z1ihh
 
 Scope of this Branch:
-So far the video-streaming microservice has a mongodb database, and the video-storage microservice uses external cloud storage AWS S3 to store the video files. 
 
-Actually, we wouldn’t have gotten this far without having already used HTTP requests for communication between the video-streaming and video-storage microservice.
+RabbitMQ server is either a named queue or a message exchange. The combination of queues and exchanges gives us a lot of flexibility in how we structure our messaging architecture.
 
-We are using the history microservices in this chapter as an example of how microservices can send and receive messages to each other. Actually, this new microservice really does have a proper place in FlixTube, and as the name suggests, it records our user’s viewing history.
+At no point do the sender and receiver communicate directly.
 
-The message we’ll transmit between microservices is the viewed message.To keep the examples in this repo simple, we’ll drop out the video-storage microservice.
+To publish a message to a queue or an exchange, we must first add a RabbitMQ server to our application.
 
-As a way to explore communication methods, we’ll have the video-streaming microservice send a viewed message to the history microservice to record our user’s viewing history.
+Rather than directing our message to a particular microservice, as we did when sending messages via HTTP POST requests, we are instead directing these to a particular queue or exchange on our RabbitMQ server with the server located by DNS.
 
-Having an efficient live reload mechanism is even more important at the application level than it is at the microservice level. 
-Unfortunately, in transitioning from direct use of Node.js to running our microservices in Docker containers, we lost
-our ability to automatically reload our code.
+The message sender uses DNS to resolve the IP address of the RabbitMQ server. 
+The receiver also uses DNS to locate the RabbitMQ server and communicate with it to retrieve the message from the queue.
 
-Because we are baking our code into our Docker images, we aren’t able to change it afterward!
-And for repeated rebuilds and restarts, the time really adds up, especially as our application grows in size.
+ 
+The RabbitMQ server is fairly heavyweight, and it takes time to start up and get ready to
+accept connections. Our tiny microservices, on the other hand, are lightweight and ready in just moments.
 
-We’ll upgrade our Docker Compose file to support sharing code between our development workstation and our containers. 
+To be a fault-tolerant and well-behaved microservice, it should really wait until the RabbitMQ server is ready before it tries to connect. Better yet, if RabbitMQ ever goes down (say because we are upgrading it), we’d like
+our microservices to handle the disconnection and automatically reconnect as soon as possible. We’d like it to work that way, but that’s more complicated. For the moment, we’ll solve this with a simple workaround.
 
-we’ll create separate Dockerfiles for our development and production modes. In each case, our needs differ. For development, we prioritize fast iteration. For production, we prioritize performance and security.
+What’s the simplest way to solve this problem? We’ll add an extra command to our Dockerfile that delays our microservice until the RabbitMQ server is ready. 
 
-To share the code, we use one Docker volume. 
+        npm install --save wait-port
 
-
+In the Dockerfile-dev Uses npx to invoke the locally installed wait-port command to wait until the server at hostname rabbit is accepting connections on port 5672
 
 ## vagrant commands 
 

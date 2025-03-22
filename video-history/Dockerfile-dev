@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18.17.1
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -6,8 +6,9 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-#Enables caching for npm installs, making subsequent npm installs faster
-#Does the npm install when the container starts. This means we can
-#make use of npm caching so it’s much faster to install at container startup
-#than if we installed it during the build process.
-CMD npm ci && npm run start:dev
+# RUN npm ci --prefer-offline --no-audit --no-fund
+# CMD ["npm", "start"]
+
+CMD npm install --prefer-offline && \
+    npx wait-port rabbitmq:5672 && \
+    npm run start:dev
