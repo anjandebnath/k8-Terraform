@@ -1,11 +1,27 @@
-version: '3'
+version: '3.8'
 services:
 
-  db-mongo:
+  #defines the container that host the mongo-db server, instantiate the container from the docker hub image
+  db-mongo: 
     image: mongo:4.2.8
     container_name: db-mongo
     ports:
       - "4000:27017"
+    restart: always
+
+
+  #instantiate a container from the docker hub image to host rabbit-mq server
+  rabbitmq: 
+    image: rabbitmq:3.12.4-management
+    container_name: rabbitmq
+    ports:
+      # The standard AMQP protocol port
+      - '5672:5672'
+      # HTTP management UI
+      - '15672:15672'
+    expose:
+      - "5672"
+      - "15672"
     restart: always
 
   
@@ -23,8 +39,10 @@ services:
      - "4001:80"  #The container's port 80 is mapped to port 4002 on the host machine.
     environment:
       - PORT=80 
+      - RABBIT=amqp://guest:guest@rabbitmq:5672
       - NODE_ENV=development                           
-                   
+    depends_on:
+      - rabbitmq           
     restart: "no"
 
 
@@ -41,9 +59,14 @@ services:
       - "4002:80"
     environment:
       - PORT=80
-      - DBHOST=mongodb://db-mongo:27017
+      - RABBIT=amqp://guest:guest@rabbitmq:5672    
+      - DBHOST=mongodb://db-mongo:27017          
       - DBNAME=history
       - NODE_ENV=development
     depends_on:
       - db-mongo
+      - rabbitmq
     restart: "no"  
+
+
+ 
