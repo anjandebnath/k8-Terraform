@@ -92,10 +92,9 @@ sudo apt-get -yq update
 sudo apt-get install -y mongodb-org-tools=4.2.0
 
 
-wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo gpg --dearmor -o /usr/share/keyrings/mongodb-server-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/mongodb-server-keyring.gpg] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
-sudo apt-get update -y
-sudo apt-get install -y mongodb-mongosh
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
 
 
 #
@@ -104,15 +103,4 @@ sudo apt-get install -y mongodb-mongosh
 sudo groupadd docker  # Creates a new group called "docker" on the system
 sudo gpasswd -a $USER docker #Adds the current user (represented by the variable $USER) to the "docker" group
 sudo service docker restart # Restarts the Docker service/daemon to apply the group changes
-
-
-
-
-
-
-
-
-
-
-
 
