@@ -5,29 +5,24 @@ Document Link: https://docs.google.com/document/d/1QLBJ6NbI1ysuVY7toN3WqBO_MbLvV
 
 Scope of this Branch:
 
-RabbitMQ server is either a named queue or a message exchange. The combination of queues and exchanges gives us a lot of flexibility in how we structure our messaging architecture.
+we will create a Kubernetes cluster and deploy containers to it: a MongoDB database, a RabbitMQ server, and of
+course, our video streaming microservice. 
 
-At no point do the sender and receiver communicate directly.
+We’ll build our production infrastructure. We’ll use Terraform to create the infrastructure for our microservices application, including our Kubernetes cluster.
 
-To publish a message to a queue or an exchange, we must first add a RabbitMQ server to our application.
+Kubernetes is the computing platform that we use to host our microservices in production.
 
-Rather than directing our message to a particular microservice, as we did when sending messages via HTTP POST requests, we are instead directing these to a particular queue or exchange on our RabbitMQ server with the server located by DNS.
+Terraform allows us to script the creation of cloud resources and application infrastructure.
+https://docs.google.com/document/d/1DqJl-yPT9DeWYcRHD81TXcbRBvPhLO2GRYnH_HpTkDY/edit?tab=t.0#heading=h.u82umkmrzbk1
 
-The message sender uses DNS to resolve the IP address of the RabbitMQ server. 
-The receiver also uses DNS to locate the RabbitMQ server and communicate with it to retrieve the message from the queue.
 
- 
-The RabbitMQ server is fairly heavyweight, and it takes time to start up and get ready to
-accept connections. Our tiny microservices, on the other hand, are lightweight and ready in just moments.
+There are many reasons to use Kubernetes. The simplest reason is to avoid vendor lock-in. All the main cloud vendors offer their own container orchestration services that are good in their own right. But each of these also offers a managed Kubernetes service, so why use a proprietary service when you can instead use Kubernetes? Using Kubernetes means our application can be portable to any cloud vendor.
 
-To be a fault-tolerant and well-behaved microservice, it should really wait until the RabbitMQ server is ready before it tries to connect. Better yet, if RabbitMQ ever goes down (say because we are upgrading it), we’d like
-our microservices to handle the disconnection and automatically reconnect as soon as possible. We’d like it to work that way, but that’s more complicated. For the moment, we’ll solve this with a simple workaround.
+Most importantly, Kubernetes has an automatable API. This is what will allow us to build our automated deployment pipeline.
 
-What’s the simplest way to solve this problem? We’ll add an extra command to our Dockerfile that delays our microservice until the RabbitMQ server is ready. 
 
-        npm install --save wait-port
 
-In the Dockerfile-dev Uses npx to invoke the locally installed wait-port command to wait until the server at hostname rabbit is accepting connections on port 5672
+
 
 ## vagrant commands 
 
