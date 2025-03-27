@@ -1,21 +1,19 @@
-terraform {
-    required_providers {
-        aws = {
-            # For each provider, the source attribute defines an optional hostname, a namespace, and the provider type.
-            source  = "hashicorp/aws"
-            # If you do not specify a provider version, Terraform will automatically download the most recent version
-            version = "~> 5.92.0"
-    }
-  }
-  required_version = ">= 1.2.0"
-}
+#terraform {
+#    required_providers {
+#        aws = {
+#            # For each provider, the source attribute defines an optional hostname, a namespace, and the provider type.
+#            source  = "hashicorp/aws"
+#            # If you do not specify a provider version, Terraform will automatically download the most recent version
+#            version = "~> 5.92.0"
+#    }
+#  }
+#  required_version = ">= 1.2.0"
+#}
 
 
 # A provider is a plugin that Terraform uses to create and manage your resources.
 provider "aws" {
-  region  = ""
-  access_key = ""
-  secret_key = ""
+  region = var.region
 }
 
 # Use resource blocks to define components of your infrastructure.
@@ -43,86 +41,114 @@ output "ecr_repository_url" {
 }
 
 
+# EKS setup
 
-
-
-
-# VPC for EKS
-resource "aws_vpc" "eks_vpc" {
-  cidr_block = "10.0.0.0/16"
+# Filter out local zones, which are not currently supported 
+# with managed node groups
+data "aws_availability_zones" "available" {
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
 }
 
-# Subnets for EKS
-resource "aws_subnet" "eks_subnets" {
-  count = 2
-  vpc_id            = aws_vpc.eks_vpc.id
-  cidr_block        = "10.0.${count.index}.0/24"
-  availability_zone = element(["us-east-1a", "us-east-1b"], count.index)
+
+locals {
+  cluster_name = "education-eks-${random_string.suffix.result}"
 }
 
-# IAM Role for EKS Cluster
-resource "aws_iam_role" "eks_role" {
-  name = "eks-cluster-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = { Service = "eks.amazonaws.com" }
-      Action = "sts:AssumeRole"
-    }]
-  })
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
 }
 
-# IAM Role for EKS Node Group
-resource "aws_iam_role" "node_role" {
-  name = "eks-node-role"
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.8.1"
 
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
+  name = "education-vpc"
 
-# EKS Cluster
-resource "aws_eks_cluster" "flixtube" {
-  name     = "flixtube"
-  role_arn = aws_iam_role.eks_role.arn
+  cidr = "10.0.0.0/16"
+  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  vpc_config {
-    subnet_ids = aws_subnet.eks_subnets[*].id
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
+  enable_dns_hostnames = true
+
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
   }
 
-  version = "1.32"
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
+  }
 }
 
-# EKS Node Group
-resource "aws_eks_node_group" "default" {
-  cluster_name    = aws_eks_cluster.flixtube.name
-  node_group_name = "default"
-  node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = aws_subnet.eks_subnets[*].id
 
-  scaling_config {
-    desired_size = 1
-    max_size     = 2
-    min_size     = 1
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.8.5"
+
+  cluster_name    = local.cluster_name
+  cluster_version = "1.29"
+
+  cluster_endpoint_public_access           = true
+  enable_cluster_creator_admin_permissions = true
+
+  cluster_addons = {
+    aws-ebs-csi-driver = {
+      service_account_role_arn = module.irsa-ebs-csi.iam_role_arn
+    }
   }
 
-  instance_types = ["t3.medium"] # Closest equivalent to Azure Standard_B2ms
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnets
+
+  eks_managed_node_group_defaults = {
+    ami_type = "AL2_x86_64"
+
+  }
+
+  eks_managed_node_groups = {
+    one = {
+      name = "node-group-1"
+
+      instance_types = ["t3.small"]
+
+      min_size     = 1
+      max_size     = 3
+      desired_size = 2
+    }
+
+    two = {
+      name = "node-group-2"
+
+      instance_types = ["t3.small"]
+
+      min_size     = 1
+      max_size     = 2
+      desired_size = 1
+    }
+  }
 }
 
-# Outputs
-output "cluster_endpoint" {
-  value = aws_eks_cluster.flixtube.endpoint
+# https://aws.amazon.com/blogs/containers/amazon-ebs-csi-driver-is-now-generally-available-in-amazon-eks-add-ons/ 
+data "aws_iam_policy" "ebs_csi_policy" {
+  arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
 }
 
-output "cluster_name" {
-  value = aws_eks_cluster.flixtube.name
+module "irsa-ebs-csi" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "5.39.0"
+
+  create_role                   = true
+  role_name                     = "AmazonEKSTFEBSCSIRole-${module.eks.cluster_name}"
+  provider_url                  = module.eks.oidc_provider
+  role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
 }
 
 
