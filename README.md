@@ -1,8 +1,6 @@
 # k8-Terraform
 Under this project I am learning the basics of DevOps and Cloud Architecture pattern
 
-Document Link: https://docs.google.com/document/d/1QLBJ6NbI1ysuVY7toN3WqBO_MbLvVDgZD4ctbC7fEF8/edit?tab=t.0#heading=h.b0zthp3z1ihh
-
 Scope of this Branch:
 
 we will create a Kubernetes cluster and deploy containers to it: a MongoDB database, a RabbitMQ server, and of
@@ -21,7 +19,8 @@ There are many reasons to use Kubernetes. The simplest reason is to avoid vendor
 Most importantly, Kubernetes has an automatable API. This is what will allow us to build our automated deployment pipeline.
 
 
-
+Kubectl is the official and primary method of interaction with Kubernetes. Anything that can be done with Kubernetes can be done
+from Kubectl-configuration, deployment of containers, and even monitoring live applications.
 
 
 ## vagrant commands 
