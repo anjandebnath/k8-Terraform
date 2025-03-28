@@ -1,15 +1,3 @@
-#terraform {
-#    required_providers {
-#        aws = {
-#            # For each provider, the source attribute defines an optional hostname, a namespace, and the provider type.
-#            source  = "hashicorp/aws"
-#            # If you do not specify a provider version, Terraform will automatically download the most recent version
-#            version = "~> 5.92.0"
-#    }
-#  }
-#  required_version = ">= 1.2.0"
-#}
-
 
 # A provider is a plugin that Terraform uses to create and manage your resources.
 provider "aws" {
