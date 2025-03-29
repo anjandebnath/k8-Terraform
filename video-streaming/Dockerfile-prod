@@ -21,6 +21,4 @@ COPY videos/ /app/videos/
 EXPOSE 3000
 
 # Command to run the app
-#CMD ["npm", "start"]
-CMD npx wait-port rabbitmq:5672 && \
-    npm start
+CMD ["npm", "start"]
