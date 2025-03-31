@@ -7,8 +7,6 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # RUN npm ci --prefer-offline --no-audit --no-fund
-# CMD ["npm", "start"]
+CMD ["npm", "start"]
 
-CMD npm install --prefer-offline && \
-    npx wait-port rabbitmq:5672 && \
-    npm run start:dev
+

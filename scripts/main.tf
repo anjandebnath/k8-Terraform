@@ -2,7 +2,7 @@
 resource "aws_ecr_repository" "stream_repo" {
   # name has to be unique  
   name = "streaming"
-  
+
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -16,7 +16,7 @@ resource "aws_ecr_repository" "stream_repo" {
 
 # build docker image
 resource "docker_image" "myapp" {
- name = "${aws_ecr_repository.stream_repo.repository_url}:latest"
+  name = "${aws_ecr_repository.stream_repo.repository_url}:latest"
 
   build {
     context    = "../video-streaming"
