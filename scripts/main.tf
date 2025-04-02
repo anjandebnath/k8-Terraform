@@ -14,7 +14,7 @@ resource "aws_ecr_repository" "stream_repo" {
 }
 
 
-# build docker image
+# build docker image video-streaming
 resource "docker_image" "myapp" {
   name = "${aws_ecr_repository.stream_repo.repository_url}:latest"
 
@@ -25,7 +25,31 @@ resource "docker_image" "myapp" {
 }
 
 
-# push to ECR
+# push image to ECR
 resource "docker_registry_image" "registry" {
   name = docker_image.myapp.name
 }
+
+
+
+
+# kubernetes secret to store ecr athorization credentials
+/*
+resource "kubernetes_secret" "docker" {
+  metadata {
+    name = "docker-cfg"
+  }
+
+  type = "kubernetes.io/dockerconfigjson"
+
+  data = {
+    ".dockerconfigjson" = jsonencode({
+      auths = {
+       "${data.aws_ecr_authorization_token.token.proxy_endpoint}" = {
+          auth = "${data.aws_ecr_authorization_token.token.authorization_token}"
+        }
+      }
+    })
+  }
+}
+*/
