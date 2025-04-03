@@ -32,9 +32,7 @@ resource "docker_registry_image" "registry" {
 
 
 
-
 # kubernetes secret to store ecr athorization credentials
-/*
 resource "kubernetes_secret" "docker" {
   metadata {
     name = "docker-cfg"
@@ -52,4 +50,3 @@ resource "kubernetes_secret" "docker" {
     })
   }
 }
-*/
