@@ -32,21 +32,3 @@ resource "docker_registry_image" "registry" {
 
 
 
-# kubernetes secret to store ecr athorization credentials
-resource "kubernetes_secret" "docker" {
-  metadata {
-    name = "docker-cfg"
-  }
-
-  type = "kubernetes.io/dockerconfigjson"
-
-  data = {
-    ".dockerconfigjson" = jsonencode({
-      auths = {
-       "${data.aws_ecr_authorization_token.token.proxy_endpoint}" = {
-          auth = "${data.aws_ecr_authorization_token.token.authorization_token}"
-        }
-      }
-    })
-  }
-}

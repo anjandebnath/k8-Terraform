@@ -25,10 +25,3 @@ output "cluster_name" {
   description = "Kubernetes Cluster Name"
   value       = module.eks.cluster_name
 }
-
-
-output "kube_secret" {
-  description = "kubernetes secret for docker"
-  value       = kubernetes_secret.docker.data
-  sensitive   = true 
-}
