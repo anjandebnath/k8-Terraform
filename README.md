@@ -3,24 +3,15 @@ Under this project I am learning the basics of DevOps and Cloud Architecture pat
 
 Scope of this Branch:
 
-we will create a Kubernetes cluster and deploy containers to it: a MongoDB database, a RabbitMQ server, and of
-course, our video streaming microservice. 
+This repo is solely responsible for creating docker image and publish the docker image to provate ECR.
+Then boot the microservice from the ECR
 
-We’ll build our production infrastructure. We’ll use Terraform to create the infrastructure for our microservices application, including our Kubernetes cluster.
-
-Kubernetes is the computing platform that we use to host our microservices in production.
-
-Terraform allows us to script the creation of cloud resources and application infrastructure.
-https://docs.google.com/document/d/1DqJl-yPT9DeWYcRHD81TXcbRBvPhLO2GRYnH_HpTkDY/edit?tab=t.0#heading=h.u82umkmrzbk1
+docker run -p 3000:3000 -e PORT=3000 <registry-url>/<image-name>:<version>
 
 
-There are many reasons to use Kubernetes. The simplest reason is to avoid vendor lock-in. All the main cloud vendors offer their own container orchestration services that are good in their own right. But each of these also offers a managed Kubernetes service, so why use a proprietary service when you can instead use Kubernetes? Using Kubernetes means our application can be portable to any cloud vendor.
-
-Most importantly, Kubernetes has an automatable API. This is what will allow us to build our automated deployment pipeline.
 
 
-Kubectl is the official and primary method of interaction with Kubernetes. Anything that can be done with Kubernetes can be done
-from Kubectl-configuration, deployment of containers, and even monitoring live applications.
+
 
 
 ## vagrant commands 

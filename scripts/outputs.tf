@@ -1,3 +1,16 @@
+output "region" {
+  description = "AWS region"
+  value       = var.region
+}
+
+
+output "ecr_repository_url" {
+
+  # aws_account_id.dkr.ecr.us-east-1.amazonaws.com/flixtube
+  description = "AWS ECR repository"
+  value       = aws_ecr_repository.stream_repo.repository_url
+}
+
 output "cluster_endpoint" {
   description = "Endpoint for EKS control plane"
   value       = module.eks.cluster_endpoint
@@ -6,11 +19,6 @@ output "cluster_endpoint" {
 output "cluster_security_group_id" {
   description = "Security group ids attached to the cluster control plane"
   value       = module.eks.cluster_security_group_id
-}
-
-output "region" {
-  description = "AWS region"
-  value       = var.region
 }
 
 output "cluster_name" {

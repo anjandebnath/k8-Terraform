@@ -6,6 +6,11 @@ terraform {
       version = "~> 5.92.0"
     }
 
+    docker = {
+      source  = "kreuzwerker/docker"
+      version = "~> 3.0.1"
+    }
+
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = ">= 2.16.1"
@@ -25,6 +30,7 @@ terraform {
       source  = "hashicorp/cloudinit"
       version = "~> 2.3.4"
     }
+
   }
 
   required_version = "~> 1.3"

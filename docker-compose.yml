@@ -36,7 +36,7 @@ services:
       - ./video-streaming/src:/usr/src/app/src:z
       - ./video-streaming/videos:/usr/src/app/videos:z
     ports:
-     - "4001:80"  #The container's port 80 is mapped to port 4002 on the host machine.
+     - "4001:80"  #The container's port 80 is mapped to port 4001 on the host machine.
     environment:
       - PORT=80 
       - RABBIT=amqp://guest:guest@rabbitmq:5672
