@@ -21,7 +21,10 @@ resource "docker_image" "myapp" {
   build {
     context    = "../video-streaming"
     dockerfile = "Dockerfile-prod"
+    #platform   = "linux/amd64" # Explicitly set to amd64 to match EKS nodes
   }
+
+  depends_on = [data.aws_ecr_authorization_token.token]
 }
 
 
