@@ -18,7 +18,9 @@ What features are covered and inprogress sofar
 - [x] Storing and retrieving files using external file storage AWS S3 
 - [x] Communication between microservices with HTTP requests and RabbitMQ messages 
 - [x] Deploying the application to a Kubernetes cluster using Terraform
-- [] Creating a CD pipeline with Github Actions Pipelines 
+- [] Creating a CD pipeline with Github Actions Pipelines Ref: https://slycreator.medium.com/seamless-ci-cd-for-eks-dockerized-app-deployment-with-github-actions-argocd-and-terraform-c44f083b9ebb
+
+# kube dashboard enable to review the POD status
 `kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml`
 
 ![PODs](https://github.com/anjandebnath/k8-Terraform/blob/main/video-streaming/videos/pods.png?raw=true)
